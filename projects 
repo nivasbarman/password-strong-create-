@@ -1,0 +1,52 @@
+import re
+import string
+import secrets
+
+try:
+    import pyperclip
+    has_pyperclip = True
+except ImportError:
+    has_pyperclip = False
+
+
+def check_password_strength(password: str) -> str:
+    if len(password) < 8:
+        return "Weak (too short)"
+    if password.isalpha():
+        return "Weak (only letters)"
+    if re.match(r"^[A-Za-z0-9]+$", password):
+        return "Medium (letters + numbers)"
+    if len(password) >= 12 and re.search(r"[A-Za-z]", password) and re.search(r"[0-9]", password) and re.search(r"[^A-Za-z0-9]", password):
+        return "Strong"
+    return "Medium"
+
+
+def generate_password(length: int = 16) -> str:
+    alphabet = string.ascii_letters + string.digits + string.punctuation
+    return ''.join(secrets.choice(alphabet) for _ in range(length))
+
+
+def main():
+    # 1) Take password input
+    user_password = input("Enter a password to check: ")
+
+    # 2) Check strength
+    strength = check_password_strength(user_password)
+
+    # 3) Display result
+    print(f"Password strength: {strength}")
+
+    # 4) Generate random password
+    new_password = generate_password(16)
+    print(f"\nGenerated strong password: {new_password}")
+
+    # 5) Copy option
+    if has_pyperclip:
+        pyperclip.copy(new_password)
+        print("✅ Password copied to clipboard!")
+    else:
+        print("ℹ️  Install 'pyperclip' to enable auto-copy (pip install pyperclip).")
+
+
+if __name__ == "__main__":
+    main()
